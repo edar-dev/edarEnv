@@ -1,0 +1,31 @@
+{
+    "git": {
+      "version": "latest"
+    },
+    "hugo": {
+      "version": "latest"
+    },
+    "scoop": {
+      "bucket": "main"
+    },
+    "vscode": {
+      "version": "latest",
+      "extensions": [
+        "ms-vscode.vscode-typescript-tslint-plugin",
+        "esbenp.prettier-vscode"
+      ]
+    },
+    "docker": {
+      "version": "latest",
+      "useDesktop": true,
+      "downloadUrl": "https://desktop.docker.com/win/stable/Docker%20Desktop%20Installer.exe"
+    },
+    "terminal": {
+      "usePowerShellAsDefault": true
+    },
+    "ohMyPosh": {
+      "version": "latest",
+      "configUrl": "https://raw.githubusercontent.com/username/repo/main/posh-config.json"
+    }
+  }
+  
