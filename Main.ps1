@@ -15,6 +15,11 @@ if (-Not (Test-Path $configPath)) {
     exit 1
 }
 
+# ConvertFrom-Json creates a PSCustomObject; convert it to a Hashtable
+$configObject = Get-Content -Path $configPath | ConvertFrom-Json
+$config = @{}
+$configObject.PSObject.Properties | ForEach-Object { $config[$_.Name] = $_.Value }
+
 $config = Get-Content -Path $configPath | ConvertFrom-Json
 
 # Ensure script is running as administrator
