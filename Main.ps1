@@ -10,17 +10,21 @@
 
 # Load configuration file
 $configPath = ".\config.json"
-if (-Not (Test-Path $configPath)) {
-    Write-Error "Configuration file not found: $configPath"
+# Legge il contenuto del file JSON
+try {
+    $jsonContent = Get-Content -Path $configPath -Raw
+} catch {
+    Write-Error "Errore durante la lettura del file JSON: $_"
     exit 1
 }
 
-# ConvertFrom-Json creates a PSCustomObject; convert it to a Hashtable
-$configObject = Get-Content -Path $configPath | ConvertFrom-Json
-$config = @{}
-$configObject.PSObject.Properties | ForEach-Object { $config[$_.Name] = $_.Value }
-
-$config = Get-Content -Path $configPath | ConvertFrom-Json
+# Converte il JSON in un hashtable
+try {
+    $config = $jsonContent | ConvertFrom-Json -AsHashtable
+} catch {
+    Write-Error "Errore durante la conversione del JSON in Hashtable: $_"
+    exit 1
+}
 
 # Ensure script is running as administrator
 if (-Not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
@@ -29,6 +33,9 @@ if (-Not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdent
 }
 
 # Run installation steps
+Write-Output "Contenuto dell'Hashtable:"
+$config.hugo | Format-Table -AutoSize
+
 Install-Hugo $config.hugo
 Install-VSCode $config.vscode
 Install-Docker $config.docker
