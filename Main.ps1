@@ -2,8 +2,6 @@
 
 # Import all modules
 . .\Modules\ProgressUtils.ps1
-. .\Modules\InstallScoop.ps1
-. .\Modules\InstallGit.ps1
 . .\Modules\InstallHugo.ps1
 . .\Modules\InstallVSCode.ps1
 . .\Modules\InstallDocker.ps1
@@ -25,12 +23,7 @@ if (-Not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdent
     exit 1
 }
 
-# Set execution policy to allow script execution
-Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
-
 # Run installation steps
-Install-Scoop $config.scoop
-Install-Git $config.git
 Install-Hugo $config.hugo
 Install-VSCode $config.vscode
 Install-Docker $config.docker
