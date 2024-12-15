@@ -13,6 +13,7 @@ $configPath = ".\config.json"
 # Legge il contenuto del file JSON
 try {
     $jsonContent = Get-Content -Path $configPath -Raw
+    Write-Output $jsonContent
 } catch {
     Write-Error "Errore durante la lettura del file JSON: $_"
     exit 1
@@ -21,6 +22,7 @@ try {
 # Converte il JSON in un hashtable
 try {
     $config = $jsonContent | ConvertFrom-Json -AsHashtable
+    Write-Output $config
 } catch {
     Write-Error "Errore durante la conversione del JSON in Hashtable: $_"
     exit 1
