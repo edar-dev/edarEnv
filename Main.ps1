@@ -1,47 +1,31 @@
-# Main.ps1
+# Load modules
+$scriptPath = Split-Path -Parent $MyInvocation.MyCommand.Path
+$modulePath = Join-Path $scriptPath "Modules"
 
-# Import all modules
-. .\Modules\ProgressUtils.ps1
-. .\Modules\InstallHugo.ps1
-. .\Modules\InstallVSCode.ps1
-. .\Modules\InstallDocker.ps1
-. .\Modules\InstallTerminal.ps1
-. .\Modules\InstallOhMyPosh.ps1
+# Import custom modules
+. (Join-Path $modulePath "ProgressUtils.ps1")
 
 # Load configuration file
-$configPath = ".\config.json"
-# Legge il contenuto del file JSON
-try {
-    $jsonContent = Get-Content -Path $configPath -Raw
-    Write-Output $jsonContent
-} catch {
-    Write-Error "Errore durante la lettura del file JSON: $_"
+$configPath = Join-Path $scriptPath "config.json"
+if (-Not (Test-Path $configPath)) {
+    Write-Error "Configuration file not found: $configPath"
     exit 1
 }
 
-# Converte il JSON in un hashtable
-try {
-    $config = $jsonContent | ConvertFrom-Json -AsHashtable
-    Write-Output $config
-} catch {
-    Write-Error "Errore durante la conversione del JSON in Hashtable: $_"
-    exit 1
+# Convert JSON to Hashtable (explicit conversion)
+$configObject = Get-Content -Path $configPath | ConvertFrom-Json
+$config = @{}
+$configObject.PSObject.Properties | ForEach-Object { $config[$_.Name] = $_.Value }
+
+# Example usage
+Write-Host "Starting setup with configuration:"
+Write-Host $config
+
+# Example: Install Hugo
+if ($config["hugo"]["version"]) {
+    Write-Host "Installing Hugo version $($config["hugo"]["version"])..."
+    scoop install hugo
+    Write-Host "Hugo installed successfully."
 }
 
-# Ensure script is running as administrator
-if (-Not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
-    Write-Error "Please run the script as an Administrator."
-    exit 1
-}
-
-# Run installation steps
-Write-Output "Contenuto dell'Hashtable:"
-$config.hugo | Format-Table -AutoSize
-
-Install-Hugo $config.hugo
-Install-VSCode $config.vscode
-Install-Docker $config.docker
-Install-Terminal $config.terminal
-Install-OhMyPosh $config.ohMyPosh
-
-Write-Host "Setup completed successfully!"
+# Continue with other modules...
