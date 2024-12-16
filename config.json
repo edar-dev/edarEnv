@@ -1,0 +1,10 @@
+{
+    "dependencies": [
+        "hugo",
+        "vscode",
+        "docker",
+        "oh-my-posh",
+        "windows-terminal"
+    ],
+    "terminal_settings_url": "https://example.com/terminal-settings.json"
+}

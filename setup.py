@@ -1,5 +1,7 @@
 import os
+import json
 import subprocess
+import sys
 
 # Helper function to execute a command
 def run_command(command):
@@ -7,7 +9,7 @@ def run_command(command):
     process = subprocess.run(command, shell=True)
     if process.returncode != 0:
         print(f"ERROR: Command failed: {command}")
-        exit(1)
+        sys.exit(1)
 
 # Scoop installation commands
 def install_with_scoop(package):
@@ -15,25 +17,35 @@ def install_with_scoop(package):
     run_command(f"scoop install {package}")
 
 # Main setup function
-def main():
+def main(config_path):
+    # Read configuration file
+    with open(config_path, "r") as config_file:
+        config = json.load(config_file)
+
     print("=======================================================")
-    print("Python Setup Script: Installing Additional Dependencies")
+    print("Python Setup Script: Installing Dependencies")
     print("=======================================================")
 
-    # Install additional dependencies
-    dependencies = ["hugo", "vscode", "docker", "oh-my-posh", "windows-terminal"]
+    # Install dependencies from config
+    dependencies = config.get("dependencies", [])
     for package in dependencies:
         install_with_scoop(package)
 
-    # Configure Windows Terminal (example)
-    print("Configuring Windows Terminal...")
-    terminal_settings_url = "https://example.com/terminal-settings.json"
-    settings_path = os.path.expanduser("~/AppData/Local/Packages/Microsoft.WindowsTerminal_8wekyb3d8bbwe/LocalState/settings.json")
-    run_command(f"curl -L {terminal_settings_url} -o \"{settings_path}\"")
+    # Perform additional setup (e.g., configuring Windows Terminal)
+    terminal_settings = config.get("terminal_settings_url")
+    if terminal_settings:
+        print("Configuring Windows Terminal...")
+        settings_path = os.path.expanduser(
+            "~/AppData/Local/Packages/Microsoft.WindowsTerminal_8wekyb3d8bbwe/LocalState/settings.json"
+        )
+        run_command(f"curl -L {terminal_settings} -o \"{settings_path}\"")
 
     print("=======================================================")
     print("Setup completed successfully!")
     print("=======================================================")
 
 if __name__ == "__main__":
-    main()
+    if len(sys.argv) < 2:
+        print("ERROR: Configuration file path is required.")
+        sys.exit(1)
+    main(sys.argv[1])
