@@ -28,6 +28,7 @@ def main(config_path):
 
     # Install dependencies from config
     dependencies = config.get("dependencies", [])
+    run_command(f"scoop bucket add extras")
     for package in dependencies:
         install_with_scoop(package)
 
